@@ -5,6 +5,7 @@ import { Fruit } from "../interfaces.ts";
 export default function List() {
   const [list, setList] = useState<Fruit[]>([]);
   const [jar, setJar] = useState<Fruit[]>([]);
+  const [listView, setListView] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchFruits(): Promise<Fruit[]> {
@@ -27,7 +28,11 @@ export default function List() {
       <div className="flex justify-center border border-black-500 w-full items-center">
         <div className="w-75 mt-8">
           <div className="mb-4">
-            <select name="view" id="view">
+            <select
+              name="view"
+              id="view"
+              onChange={(): void => setListView(!listView)}
+            >
               <option value="List">List View</option>
               <option value="List">Table View</option>
             </select>
@@ -41,23 +46,50 @@ export default function List() {
               <option value="Genus">Genus</option>
             </select>
           </div>
-          <div>
-            {list
-              ? list.map((fruit: Fruit) => (
-                  <div
-                    key={fruit.id}
-                    className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
-                  >
-                    <h3>
-                      {fruit.name} ({fruit.nutritions.calories})
-                    </h3>
-                    <button onClick={(): void => setJar([...jar, fruit])}>
-                      Add +
-                    </button>
-                  </div>
-                ))
-              : null}
-          </div>
+          {listView ? (
+            <div>
+              {list
+                ? list.map((fruit: Fruit) => (
+                    <div
+                      key={fruit.id}
+                      className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
+                    >
+                      <h3>
+                        {fruit.name} ({fruit.nutritions.calories})
+                      </h3>
+                      <button onClick={(): void => setJar([...jar, fruit])}>
+                        Add +
+                      </button>
+                    </div>
+                  ))
+                : null}
+            </div>
+          ) : (
+            <div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Family</th>
+                    <th>Order</th>
+                    <th>Genus</th>
+                    <th>Calories</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {list.map((fruit: Fruit) => (
+                    <tr>
+                      <td>{fruit.name}</td>
+                      <td>{fruit.family}</td>
+                      <td>{fruit.order}</td>
+                      <td>{fruit.genus}</td>
+                      <td>{fruit.nutritions.calories}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     );
