@@ -4,6 +4,7 @@ import { Fruit } from "../interfaces.ts";
 
 export default function List() {
   const [list, setList] = useState<Fruit[]>([]);
+  const [jar, setJar] = useState<Fruit[]>([]);
 
   useEffect(() => {
     async function fetchFruits(): Promise<Fruit[]> {
@@ -23,30 +24,40 @@ export default function List() {
 
   function FruitList() {
     return (
-      <div className="justify-center border border-black-500 w-full">
-        <div>
-          <div>
+      <div className="flex justify-center border border-black-500 w-full items-center">
+        <div className="w-75 mt-8">
+          <div className="mb-4">
             <select name="view" id="view">
               <option value="List">List View</option>
               <option value="List">Table View</option>
             </select>
           </div>
-          <label htmlFor="fruit property">Group by</label>
-          <select name="fruit property" id="fruit property">
-            <option value="None">None</option>
-            <option value="Family">Family</option>
-            <option value="Order">Order</option>
-            <option value="Genus">Genus</option>
-          </select>
-        </div>
-        <div>
-          {list
-            ? list.map((fruit) => (
-                <h3 key={fruit.id}>
-                  {fruit.name} ({fruit.nutritions.calories})
-                </h3>
-              ))
-            : null}
+          <div className="mb-8">
+            <label htmlFor="fruit property">Group by</label>
+            <select name="fruit property" id="fruit property">
+              <option value="None">None</option>
+              <option value="Family">Family</option>
+              <option value="Order">Order</option>
+              <option value="Genus">Genus</option>
+            </select>
+          </div>
+          <div>
+            {list
+              ? list.map((fruit: Fruit) => (
+                  <div
+                    key={fruit.id}
+                    className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
+                  >
+                    <h3>
+                      {fruit.name} ({fruit.nutritions.calories})
+                    </h3>
+                    <button onClick={(): void => setJar([...jar, fruit])}>
+                      Add +
+                    </button>
+                  </div>
+                ))
+              : null}
+          </div>
         </div>
       </div>
     );
@@ -55,7 +66,20 @@ export default function List() {
   function JarList() {
     return (
       <div className="flex justify-center border border-black-500 w-full">
-        this is the jar
+        <div>
+          {jar
+            ? jar.map((fruit: Fruit) => (
+                <div
+                  key={fruit.id}
+                  className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
+                >
+                  <h3>
+                    {fruit.name} ({fruit.nutritions.calories})
+                  </h3>
+                </div>
+              ))
+            : null}
+        </div>
       </div>
     );
   }
