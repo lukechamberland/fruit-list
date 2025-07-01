@@ -1,7 +1,9 @@
+import List from "./list-components/List";
+
 export default function Home() {
   return (
-    <div className="text-blue-500">
-      hello world
+    <div>
+      <List />
     </div>
   );
 }
