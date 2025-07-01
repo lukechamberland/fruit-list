@@ -23,6 +23,34 @@ export default function List() {
     fetchFruits();
   }, []);
 
+
+  // helper function to return grouped structure
+  function ReturnByType({ fruitType }: Readonly<{ fruitType: string }>) {
+    const types = ["family", "order", "genus"];
+    for (let type of types) {
+      if (type === fruitType) {
+        let allTypes = [];
+        for (let ele of list) {
+          if (!allTypes.includes(ele[type])) {
+            allTypes.push(ele[type]);
+          }
+        }
+        return (
+          <div>
+            {allTypes.map((ele: string, index: number) => (
+              <div key={index}>
+                <h1>{ele}</h1>
+                {list.filter((fruit: Fruit) => fruit[type] === ele).map((fruit: Fruit) => (
+                  <h2 key={fruit.id}>{fruit.name} ({fruit.nutritions.calories})</h2>
+                ))}
+              </div>
+            ))}
+          </div>
+        );
+      }
+    }
+  }
+
   function FruitList() {
     return (
       <div className="flex justify-center border border-black-500 w-full items-center">
@@ -78,7 +106,7 @@ export default function List() {
                 </thead>
                 <tbody>
                   {list.map((fruit: Fruit) => (
-                    <tr>
+                    <tr key={fruit.id}>
                       <td>{fruit.name}</td>
                       <td>{fruit.family}</td>
                       <td>{fruit.order}</td>
@@ -90,6 +118,10 @@ export default function List() {
               </table>
             </div>
           )}
+          {/* fix this */}
+          <div>
+            <ReturnByType fruitType={"family"} />
+          </div>
         </div>
       </div>
     );
