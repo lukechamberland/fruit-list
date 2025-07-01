@@ -1,45 +1,57 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Fruit } from "../interfaces.ts";
+import { Fruit } from "../interfaces";
 import Chart from "./Chart";
+import JarList from "./JarList";
+import { getRandomColor } from "../helpers";
 
 export default function List() {
   const [list, setList] = useState<Fruit[]>([]);
   const [jar, setJar] = useState<Fruit[]>([]);
   const [listView, setListView] = useState<string>("List");
   const [group, setGroup] = useState<string>("none");
+  const [colors, setColors] = useState<string[]>([]);
 
-  useEffect(() => {
-    async function fetchFruits(): Promise<Fruit[]> {
-      const data = await fetch("https://fruity-proxy.vercel.app/api/fruits", {
-        headers: {
-          "x-api-key": "fruit-api-challenge-2025",
-        },
-      });
+  useEffect((): void => {
+    async function fetchFruits(): Promise<void> {
+      try {
+        const response = await fetch(
+          "https://fruity-proxy.vercel.app/api/fruits",
+          {
+            headers: {
+              "x-api-key": "fruit-api-challenge-2025",
+            },
+          }
+        );
 
-      const parsedData = await data.json();
-      console.log(parsedData);
-      setList(parsedData);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const parsedData = await response.json();
+        setList(parsedData);
+      } catch (error) {
+        console.error("Failed to fetch fruits:", error);
+      }
     }
 
     fetchFruits();
   }, []);
 
-  useEffect(() => {
-    console.log(group);
-  }, [group]);
-
   // helper function to return grouped structure
+  // NOTE: keeping this function here to avoid prop drilling
   function GroupedList({ fruitType }: Readonly<{ fruitType: string }>) {
-    const types = ["family", "order", "genus"];
+
+    type GroupKey = "family" | "order" | "genus";
+
+    const types: GroupKey[] = ["family", "order", "genus"];
 
     // return nothing if 'none' is the group
-    if (!types.includes(fruitType)) {
-      return null;
-    }
+    if (!types.includes(fruitType as GroupKey)) return null;
+    
     for (let type of types) {
       if (type === fruitType) {
-        let allTypes = [];
+        let allTypes: any[] = [];
         for (let ele of list) {
           if (!allTypes.includes(ele[type])) {
             allTypes.push(ele[type]);
@@ -49,18 +61,20 @@ export default function List() {
           <div>
             {allTypes.map((ele: string, index: number) => (
               <details key={index}>
-                <summary className="mb-4 border border-green-500">
+                <summary className="mb-4 cursor-pointer text-white">
                   <span>{ele}</span>
                 </summary>
-                <ul>
+                <ul className="ml-4">
                   <button
-                    className="ml-auto"
-                    onClick={() =>
+                    className="ml-auto  mb-4 cursor-pointer rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-300 text-white"
+                    onClick={() => {
+                      const length: Fruit[] = list.filter((fruit: Fruit) => fruit[type] === ele);
                       setJar([
                         ...jar,
-                        ...list.filter((fruit: Fruit) => fruit[type] === ele),
-                      ])
-                    }
+                        ...length,
+                      ]);
+                      setColors([...colors, ...length.map(() => getRandomColor())]);
+                    }}
                   >
                     Add All +
                   </button>
@@ -69,12 +83,18 @@ export default function List() {
                     .map((fruit: Fruit) => (
                       <li
                         key={fruit.id}
-                        className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2 pointer"
+                        className="flex justify-between border border-white mb-4 h-10 rounded-md items-center p-2 pointer text-white"
                       >
                         <h3>
                           {fruit.name} ({fruit.nutritions.calories})
                         </h3>
-                        <button onClick={(): void => setJar([...jar, fruit])}>
+                        <button
+                          className="cursor-pointer rounded-md p-1.5 hover:bg-gray-200 transition-colors duration-300 text-white"
+                          onClick={(): void => {
+                            setJar([...jar, fruit]);
+                            setColors([...colors, getRandomColor()]);
+                          }}
+                        >
                           Add +
                         </button>
                       </li>
@@ -88,66 +108,75 @@ export default function List() {
     }
   }
 
-  function List() {
+  function AllFruits() {
     return (
       <div>
-        {listView === "List" ? (
-          <div>
-            {list
-              ? list.map((fruit: Fruit) => (
-                  <div
-                    key={fruit.id}
-                    className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
-                  >
-                    <h3>
-                      {fruit.name} ({fruit.nutritions.calories})
-                    </h3>
-                    <button onClick={(): void => setJar([...jar, fruit])}>
-                      Add +
-                    </button>
-                  </div>
-                ))
-              : null}
+        {list.map((fruit: Fruit) => (
+          <div
+            key={fruit.id}
+            className="flex justify-between border border-white mb-4 h-10 rounded-md items-center p-2 text-white"
+          >
+            <h3>
+              {fruit.name} ({fruit.nutritions.calories})
+            </h3>
+            <button
+              className="cursor-pointer rounded-md hover:bg-gray-300 transition-colors duration-300 text-white p-1"
+              onClick={(): void => {
+                setJar([...jar, fruit]);
+                setColors([...colors, getRandomColor()]);
+              }}
+            >
+              Add +
+            </button>
           </div>
-        ) : (
-          <div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Family</th>
-                  <th>Order</th>
-                  <th>Genus</th>
-                  <th>Calories</th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((fruit: Fruit) => (
-                  <tr key={fruit.id}>
-                    <td>{fruit.name}</td>
-                    <td>{fruit.family}</td>
-                    <td>{fruit.order}</td>
-                    <td>{fruit.genus}</td>
-                    <td>{fruit.nutritions.calories}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        ))}
       </div>
     );
   }
 
+  function TableFruits() {
+    return (
+      <div>
+        <table>
+          <thead>
+            <tr className="text-white">
+              <th className="text-left px-2 py-8">Name</th>
+              <th className="text-left px-2 py-8">Family</th>
+              <th className="text-left px-2 py-8">Order</th>
+              <th className="text-left px-2 py-8">Genus</th>
+              <th className="text-left px-2 py-8">Calories</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((fruit: Fruit) => (
+              <tr key={fruit.id} className="text-white mb-4">
+                <td className="px-2 py-2">{fruit.name}</td>
+                <td className="px-2 py-2">{fruit.family}</td>
+                <td className="px-2 py-2">{fruit.order}</td>
+                <td className="px-2 py-2">{fruit.genus}</td>
+                <td className="px-2 py-2">{fruit.nutritions.calories}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  function List() {
+    return <div>{listView === "List" ? <AllFruits /> : <TableFruits />}</div>;
+  }
+
   function FruitList() {
     return (
-      <div className="flex justify-center border border-black-500 w-full items-center">
-        <div className="w-75 mt-8">
+      <div className="flex justify-center border border-white w-full items-center rounded-4xl">
+        <div className={`w-${listView === "list" ? 75 : 150} mt-8`}>
           <div className="mb-4">
             <select
               value={listView}
               name="view"
               id="view"
+              className="text-white cursor-pointer"
               onChange={(e): void => {
                 if (group === "none") {
                   setListView(e.target.value);
@@ -159,11 +188,14 @@ export default function List() {
             </select>
           </div>
           <div className="mb-8">
-            <label htmlFor="fruit property">Group by</label>
+            <label htmlFor="fruit property" className="text-white">
+              Group by
+            </label>
             <select
               value={group}
               name="fruit property"
               id="fruit property"
+              className="text-white cursor-pointer"
               onChange={(e): void => setGroup(e.target.value)}
             >
               <option value="none">None</option>
@@ -178,35 +210,16 @@ export default function List() {
     );
   }
 
-  function JarList() {
-    return (
-      <div className="flex justify-center border border-black-500 w-full">
-        <div className="mt-16">
-        <h1>Total Calories : {jar ? jar.reduce((total, fruit) => fruit.nutritions.calories + total, 0): 0}</h1>
-          {jar
-            ?
-            jar.map((fruit: Fruit, index: number) => (
-                <div
-                  // using index since order will never change
-                  key={index}
-                  className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
-                >
-                  <h3>
-                    {fruit.name} ({fruit.nutritions.calories})
-                  </h3>
-                </div>
-              ))
-            : null}
-        </div>
-        <Chart jar={jar} />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex justify-space-between">
-      <FruitList />
-      <JarList />
+    <div>
+      {list.length > 0 ? (
+        <div className="flex justify-space-between p-16 gap-16">
+          <FruitList />
+          <JarList jar={jar} colors={colors} />
+        </div>
+      ) : (
+        <span className="text-white">Loading...</span>
+      )}
     </div>
   );
 }

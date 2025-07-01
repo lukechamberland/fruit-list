@@ -1,19 +1,10 @@
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Fruit } from "../interfaces.ts";
+import { Fruit } from "../interfaces";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function getRandomColor(): string {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
-
-export default function PieChart({ jar }: Readonly<{ jar: Fruit[] }>) {
+export default function PieChart({ jar, colors }: Readonly<{ jar: Fruit[], colors: string[] }>) {
 
   const data = {
     labels: [...jar.map((fruit: Fruit) => fruit.name)],
@@ -21,15 +12,32 @@ export default function PieChart({ jar }: Readonly<{ jar: Fruit[] }>) {
       {
         label: "Calories",
         data: [...jar.map((fruit) => fruit.nutritions.calories)],
-        backgroundColor: [...jar.map(() => getRandomColor())],
+        backgroundColor: colors,
         borderWidth: 1,
       },
     ],
   };
 
+  const options = {
+    plugins: {
+      legend: {
+        position: "bottom" as const,
+        labels: {
+          padding: 20,
+        },
+      },
+    },
+    layout: {
+      padding: {
+        bottom: 30,
+      },
+    },
+    responsive: true,
+  };
+
   return (
-    <div>
-      <Pie data={data} />
+    <div style={{ width: '400px', height: '400px' }}>
+      <Pie data={data} options={options} />
     </div>
   );
 }
