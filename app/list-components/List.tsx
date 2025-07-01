@@ -5,7 +5,7 @@ import { Fruit } from "../interfaces.ts";
 export default function List() {
   const [list, setList] = useState<Fruit[]>([]);
   const [jar, setJar] = useState<Fruit[]>([]);
-  const [listView, setListView] = useState<boolean>(true);
+  const [listView, setListView] = useState<string>("List");
   const [group, setGroup] = useState<string>("none");
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function List() {
   // helper function to return grouped structure
   function GroupedList({ fruitType }: Readonly<{ fruitType: string }>) {
     const types = ["family", "order", "genus"];
+
     // return nothing if 'none' is the group
     if (!types.includes(fruitType)) {
       return null;
@@ -47,14 +48,27 @@ export default function List() {
           <div>
             {allTypes.map((ele: string, index: number) => (
               <details key={index}>
-                <summary className="mb-4">{ele}</summary>
+                <summary className="mb-4 border border-green-500">
+                  <span>{ele}</span>
+                </summary>
                 <ul>
+                  <button
+                    className="ml-auto"
+                    onClick={() =>
+                      setJar([
+                        ...jar,
+                        ...list.filter((fruit: Fruit) => fruit[type] === ele),
+                      ])
+                    }
+                  >
+                    Add All +
+                  </button>
                   {list
                     .filter((fruit: Fruit) => fruit[type] === ele)
                     .map((fruit: Fruit) => (
                       <li
                         key={fruit.id}
-                        className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
+                        className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2 pointer"
                       >
                         <h3>
                           {fruit.name} ({fruit.nutritions.calories})
@@ -76,7 +90,7 @@ export default function List() {
   function List() {
     return (
       <div>
-        {listView ? (
+        {listView === "List" ? (
           <div>
             {list
               ? list.map((fruit: Fruit) => (
@@ -130,17 +144,23 @@ export default function List() {
         <div className="w-75 mt-8">
           <div className="mb-4">
             <select
+              value={listView}
               name="view"
               id="view"
-              onChange={(): void => setListView(!listView)}
+              onChange={(e): void => {
+                if (group === "none") {
+                  setListView(e.target.value);
+                }
+              }}
             >
               <option value="List">List View</option>
-              <option value="List">Table View</option>
+              <option value="Table">Table View</option>
             </select>
           </div>
           <div className="mb-8">
             <label htmlFor="fruit property">Group by</label>
             <select
+              value={group}
               name="fruit property"
               id="fruit property"
               onChange={(e): void => setGroup(e.target.value)}
@@ -160,11 +180,14 @@ export default function List() {
   function JarList() {
     return (
       <div className="flex justify-center border border-black-500 w-full">
-        <div>
+        <div className="mt-16">
+        <h1>Total Calories : {jar ? jar.reduce((total, fruit) => fruit.nutritions.calories + total, 0): 0}</h1>
           {jar
-            ? jar.map((fruit: Fruit) => (
+            ?
+            jar.map((fruit: Fruit, index: number) => (
                 <div
-                  key={fruit.id}
+                  // using index since order will never change
+                  key={index}
                   className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
                 >
                   <h3>
