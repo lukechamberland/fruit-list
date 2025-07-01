@@ -6,6 +6,7 @@ export default function List() {
   const [list, setList] = useState<Fruit[]>([]);
   const [jar, setJar] = useState<Fruit[]>([]);
   const [listView, setListView] = useState<boolean>(true);
+  const [group, setGroup] = useState<string>("none");
 
   useEffect(() => {
     async function fetchFruits(): Promise<Fruit[]> {
@@ -23,10 +24,17 @@ export default function List() {
     fetchFruits();
   }, []);
 
+  useEffect(() => {
+    console.log(group);
+  }, [group]);
 
   // helper function to return grouped structure
-  function ReturnByType({ fruitType }: Readonly<{ fruitType: string }>) {
+  function GroupedList({ fruitType }: Readonly<{ fruitType: string }>) {
     const types = ["family", "order", "genus"];
+    // return nothing if 'none' is the group
+    if (!types.includes(fruitType)) {
+      return null;
+    }
     for (let type of types) {
       if (type === fruitType) {
         let allTypes = [];
@@ -38,17 +46,82 @@ export default function List() {
         return (
           <div>
             {allTypes.map((ele: string, index: number) => (
-              <div key={index}>
-                <h1>{ele}</h1>
-                {list.filter((fruit: Fruit) => fruit[type] === ele).map((fruit: Fruit) => (
-                  <h2 key={fruit.id}>{fruit.name} ({fruit.nutritions.calories})</h2>
-                ))}
-              </div>
+              <details key={index}>
+                <summary className="mb-4">{ele}</summary>
+                <ul>
+                  {list
+                    .filter((fruit: Fruit) => fruit[type] === ele)
+                    .map((fruit: Fruit) => (
+                      <li
+                        key={fruit.id}
+                        className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
+                      >
+                        <h3>
+                          {fruit.name} ({fruit.nutritions.calories})
+                        </h3>
+                        <button onClick={(): void => setJar([...jar, fruit])}>
+                          Add +
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+              </details>
             ))}
           </div>
         );
       }
     }
+  }
+
+  function List() {
+    return (
+      <div>
+        {listView ? (
+          <div>
+            {list
+              ? list.map((fruit: Fruit) => (
+                  <div
+                    key={fruit.id}
+                    className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
+                  >
+                    <h3>
+                      {fruit.name} ({fruit.nutritions.calories})
+                    </h3>
+                    <button onClick={(): void => setJar([...jar, fruit])}>
+                      Add +
+                    </button>
+                  </div>
+                ))
+              : null}
+          </div>
+        ) : (
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Family</th>
+                  <th>Order</th>
+                  <th>Genus</th>
+                  <th>Calories</th>
+                </tr>
+              </thead>
+              <tbody>
+                {list.map((fruit: Fruit) => (
+                  <tr key={fruit.id}>
+                    <td>{fruit.name}</td>
+                    <td>{fruit.family}</td>
+                    <td>{fruit.order}</td>
+                    <td>{fruit.genus}</td>
+                    <td>{fruit.nutritions.calories}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
   }
 
   function FruitList() {
@@ -67,61 +140,18 @@ export default function List() {
           </div>
           <div className="mb-8">
             <label htmlFor="fruit property">Group by</label>
-            <select name="fruit property" id="fruit property">
-              <option value="None">None</option>
-              <option value="Family">Family</option>
-              <option value="Order">Order</option>
-              <option value="Genus">Genus</option>
+            <select
+              name="fruit property"
+              id="fruit property"
+              onChange={(e): void => setGroup(e.target.value)}
+            >
+              <option value="none">None</option>
+              <option value="family">Family</option>
+              <option value="order">Order</option>
+              <option value="genus">Genus</option>
             </select>
           </div>
-          {listView ? (
-            <div>
-              {list
-                ? list.map((fruit: Fruit) => (
-                    <div
-                      key={fruit.id}
-                      className="flex justify-between border border-blue-500 mb-4 h-10 rounded-md items-center p-2"
-                    >
-                      <h3>
-                        {fruit.name} ({fruit.nutritions.calories})
-                      </h3>
-                      <button onClick={(): void => setJar([...jar, fruit])}>
-                        Add +
-                      </button>
-                    </div>
-                  ))
-                : null}
-            </div>
-          ) : (
-            <div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Family</th>
-                    <th>Order</th>
-                    <th>Genus</th>
-                    <th>Calories</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {list.map((fruit: Fruit) => (
-                    <tr key={fruit.id}>
-                      <td>{fruit.name}</td>
-                      <td>{fruit.family}</td>
-                      <td>{fruit.order}</td>
-                      <td>{fruit.genus}</td>
-                      <td>{fruit.nutritions.calories}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {/* fix this */}
-          <div>
-            <ReturnByType fruitType={"family"} />
-          </div>
+          {group === "none" ? <List /> : <GroupedList fruitType={group} />}
         </div>
       </div>
     );
