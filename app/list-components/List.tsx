@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Fruit } from "../interfaces.ts";
+import Chart from "./Chart";
 
 export default function List() {
   const [list, setList] = useState<Fruit[]>([]);
@@ -197,6 +198,7 @@ export default function List() {
               ))
             : null}
         </div>
+        <Chart jar={jar} />
       </div>
     );
   }
