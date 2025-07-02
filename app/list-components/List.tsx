@@ -16,7 +16,7 @@ export default function List() {
     async function fetchFruits(): Promise<void> {
       try {
         const response = await fetch(
-          "https://fruity-proxy.vercel.app/api/fruits",
+          "/api/fruits",
           {
             headers: {
               "x-api-key": "fruit-api-challenge-2025",
