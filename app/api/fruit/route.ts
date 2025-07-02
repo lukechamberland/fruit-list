@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 
 const ALLOWED_ORIGIN = "https://fruit-list-liard.vercel.app";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const response = await fetch("https://fruity-proxy.vercel.app/api/fruits", {
       headers: {
         "x-api-key": "fruit-api-challenge-2025",
         Origin: ALLOWED_ORIGIN,
-      } as HeadersInit,
+      },
     });
 
     const data = await response.json();
@@ -17,8 +17,6 @@ export async function GET() {
     res.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
     res.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
     res.headers.set("Access-Control-Allow-Headers", "Content-Type, x-api-key");
-    res.headers.set("Access-Control-Allow-Credentials", "false");
-
     return res;
   } catch (error) {
     return NextResponse.json(
@@ -36,7 +34,5 @@ export function OPTIONS() {
   res.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   res.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.headers.set("Access-Control-Allow-Headers", "Content-Type, x-api-key");
-  res.headers.set("Access-Control-Allow-Credentials", "false");
-
   return res;
 }
