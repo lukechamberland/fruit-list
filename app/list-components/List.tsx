@@ -12,11 +12,15 @@ export default function List() {
   const [group, setGroup] = useState<string>("none");
   const [colors, setColors] = useState<string[]>([]);
 
+  const proxyUrl: string = "https://cors-anywhere.herokuapp.com/";
+  const targetUrl: string = "https://fruity-proxy.vercel.app/api/fruits";
+
   useEffect((): void => {
     async function fetchFruits(): Promise<void> {
       try {
         const response = await fetch(
-          "https://fruity-proxy.vercel.app/api/fruits",
+          // bad practice but should be fine for the demo
+          proxyUrl + targetUrl,
           {
             headers: {
               "x-api-key": "fruit-api-challenge-2025",
@@ -25,6 +29,11 @@ export default function List() {
         );
 
         if (!response.ok) {
+          console.error(
+            "Fetch failed with status:",
+            response.status,
+            await response.text()
+          );
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -41,14 +50,13 @@ export default function List() {
   // helper function to return grouped structure
   // NOTE: keeping this function here to avoid prop drilling
   function GroupedList({ fruitType }: Readonly<{ fruitType: string }>) {
-
     type GroupKey = "family" | "order" | "genus";
 
     const types: GroupKey[] = ["family", "order", "genus"];
 
     // return nothing if 'none' is the group
     if (!types.includes(fruitType as GroupKey)) return null;
-    
+
     for (let type of types) {
       if (type === fruitType) {
         let allTypes: any[] = [];
@@ -68,12 +76,14 @@ export default function List() {
                   <button
                     className="ml-auto  mb-4 cursor-pointer rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-300 text-white"
                     onClick={() => {
-                      const length: Fruit[] = list.filter((fruit: Fruit) => fruit[type] === ele);
-                      setJar([
-                        ...jar,
-                        ...length,
+                      const length: Fruit[] = list.filter(
+                        (fruit: Fruit) => fruit[type] === ele
+                      );
+                      setJar([...jar, ...length]);
+                      setColors([
+                        ...colors,
+                        ...length.map(() => getRandomColor()),
                       ]);
-                      setColors([...colors, ...length.map(() => getRandomColor())]);
                     }}
                   >
                     Add All +
