@@ -16,14 +16,10 @@ export default function List() {
     async function fetchFruits(): Promise<void> {
       try {
         const response = await fetch(
-          "/api/fruits",
+          "https://fruity-proxy.vercel.app/api/fruits",
           {
             headers: {
               "x-api-key": "fruit-api-challenge-2025",
-              "Access-Control-Allow-Origin": "https://fruity-proxy.vercel.app",
-              "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-              "Access-Control-Allow-Headers": "Content-Type, Authorization",
-              "Access-Control-Allow-Credentials": "true",
             },
           }
         );
