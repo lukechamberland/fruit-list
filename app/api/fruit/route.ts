@@ -11,13 +11,6 @@ export async function GET() {
       } as HeadersInit,
     });
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Upstream error" },
-        { status: response.status }
-      );
-    }
-
     const data = await response.json();
 
     const res = NextResponse.json(data, { status: 200 });
