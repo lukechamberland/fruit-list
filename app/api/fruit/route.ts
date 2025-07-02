@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_API_URL; 
+const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_API_URL || "";
 
 export async function GET() {
   try {
@@ -8,7 +8,7 @@ export async function GET() {
       headers: {
         "x-api-key": "fruit-api-challenge-2025",
         "Origin": ALLOWED_ORIGIN,
-      },
+      } as HeadersInit
     });
 
     if (!response.ok) {
