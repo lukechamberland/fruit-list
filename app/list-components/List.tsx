@@ -12,22 +12,14 @@ export default function List() {
   const [group, setGroup] = useState<string>("none");
   const [colors, setColors] = useState<string[]>([]);
 
-  const proxyUrl: string = "https://cors-anywhere.herokuapp.com/";
-  const targetUrl: string = "https://fruity-proxy.vercel.app/api/fruits";
-
   useEffect((): void => {
     async function fetchFruits(): Promise<void> {
       try {
-        const response = await fetch(
-          // bad practice but should be fine for the demo
-          proxyUrl + targetUrl,
-          {
-            headers: {
-              "x-api-key": "fruit-api-challenge-2025",
-            },
+        const response = await fetch('https://fruity-proxy.vercel.app/api/fruits', {
+          headers: {
+            'x-api-key': 'fruit-api-challenge-2025'
           }
-        );
-
+        })
         if (!response.ok) {
           console.error(
             "Fetch failed with status:",
