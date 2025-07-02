@@ -16,15 +16,6 @@ export default function List() {
     async function fetchFruits(): Promise<void> {
       try {
         const response = await fetch("/api/fruit");
-        console.log(response);
-        if (!response.ok) {
-          console.error(
-            "Fetch failed with status:",
-            response.status,
-            await response.text()
-          );
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const parsedData = await response.json();
         setList(parsedData);
@@ -162,10 +153,6 @@ export default function List() {
     );
   }
 
-  function List() {
-    return <div>{listView === "List" ? <AllFruits /> : <TableFruits />}</div>;
-  }
-
   function FruitList() {
     return (
       <div className="flex justify-center border border-white w-full items-center rounded-4xl">
@@ -203,7 +190,7 @@ export default function List() {
               <option value="genus">Genus</option>
             </select>
           </div>
-          {group === "none" ? <List /> : <GroupedList fruitType={group} />}
+          {group === "none" ? <div>{listView === "List" ? <AllFruits /> : <TableFruits />}</div> : <GroupedList fruitType={group} />}
         </div>
       </div>
     );
