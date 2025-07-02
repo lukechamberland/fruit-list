@@ -15,14 +15,8 @@ export default function List() {
   useEffect((): void => {
     async function fetchFruits(): Promise<void> {
       try {
-        const response = await fetch(
-          "https://fruity-proxy.vercel.app/api/fruits",
-          {
-            headers: {
-              "x-api-key": "fruit-api-challenge-2025",
-            },
-          }
-        );
+        const response = await fetch("/api/fruit");
+        console.log(response);
         if (!response.ok) {
           console.error(
             "Fetch failed with status:",
