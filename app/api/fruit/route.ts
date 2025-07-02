@@ -11,7 +11,9 @@ export async function GET() {
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Fetch failed with status:", res.status, errorText);
-      return new NextResponse("Failed to fetch external API", { status: res.status });
+      return new NextResponse("Failed to fetch external API", {
+        status: res.status,
+      });
     }
 
     const data = await res.json();
