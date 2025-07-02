@@ -41,7 +41,7 @@ export async function GET(req: Request) {
   }
 }
 
-export function OPTIONS(req) {
+export function OPTIONS(req: any) {
   req.headers.set("x-api-key", "fruit-api-challenge-2025");
   const res = new Response(null, {
     status: 204,
