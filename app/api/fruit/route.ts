@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const ALLOWED_ORIGIN = "https://fruit-list-liard.vercel.app/"; 
+const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_API_URL; 
 
 export async function GET() {
   try {
