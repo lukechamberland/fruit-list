@@ -20,7 +20,7 @@ export default function List() {
           {
             headers: {
               "x-api-key": "fruit-api-challenge-2025",
-              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Origin": "https://fruity-proxy.vercel.app",
               "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
               "Access-Control-Allow-Headers": "Content-Type, Authorization",
               "Access-Control-Allow-Credentials": "true",
