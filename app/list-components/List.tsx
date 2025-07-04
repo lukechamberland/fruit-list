@@ -163,11 +163,7 @@ export default function List() {
   function FruitList() {
     return (
       <div className="flex justify-center border border-white w-full rounded-4xl p-8">
-        <div
-          className={`w-${
-            listView === "List" ? "64" : "full"
-          } mt-8 border border-red-500`}
-        >
+        <div className={`w-${listView === "List" ? "64" : "full"} mt-8`}>
           <div className="mb-4">
             <select
               value={listView}
