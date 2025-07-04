@@ -4,8 +4,10 @@ import { Fruit } from "../interfaces";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function PieChart({ jar, colors }: Readonly<{ jar: Fruit[], colors: string[] }>) {
-
+export default function PieChart({
+  jar,
+  colors,
+}: Readonly<{ jar: Fruit[]; colors: string[] }>) {
   const data = {
     labels: [...jar.map((fruit: Fruit) => fruit.name)],
     datasets: [
@@ -19,25 +21,27 @@ export default function PieChart({ jar, colors }: Readonly<{ jar: Fruit[], color
   };
 
   const options = {
-    plugins: {
-      legend: {
-        position: "bottom" as const,
-        labels: {
-          padding: 20,
-        },
-      },
-    },
+    responsive: true,
+
     layout: {
       padding: {
         bottom: 30,
       },
     },
-    responsive: true,
+
+    plugins: {
+      legend: {
+        labels: {
+          color: "#ffffff",
+        },
+        position: "bottom" as const,
+      },
+    },
   };
 
   return (
-    <div style={{ width: '400px', height: '400px' }}>
-      <Pie data={data} options={options} />
+    <div className="relative w-full h-full max-w-[600px] ">
+      <Pie data={data} options={options} className="mb-[-50px]" />
     </div>
   );
 }

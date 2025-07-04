@@ -15,7 +15,14 @@ export default function List() {
   useEffect((): void => {
     async function fetchFruits(): Promise<void> {
       try {
-        const response = await fetch("/api/fruit");
+        const response = await fetch(
+          "https://fruity-proxy.vercel.app/api/fruits",
+          {
+            headers: {
+              "x-api-key": "fruit-api-challenge-2025",
+            },
+          }
+        );
 
         const parsedData = await response.json();
         setList(parsedData);
@@ -54,7 +61,7 @@ export default function List() {
                 </summary>
                 <ul className="ml-4">
                   <button
-                    className="ml-auto  mb-4 cursor-pointer rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-300 text-white"
+                    className="ml-auto mb-4 cursor-pointer rounded-md p-1.5 hover:bg-gray-100 transition-colors duration-300 text-white"
                     onClick={() => {
                       const length: Fruit[] = list.filter(
                         (fruit: Fruit) => fruit[type] === ele
@@ -155,8 +162,12 @@ export default function List() {
 
   function FruitList() {
     return (
-      <div className="flex justify-center border border-white w-full items-center rounded-4xl">
-        <div className={`w-${listView === "list" ? 75 : 150} mt-8`}>
+      <div className="flex justify-center border border-white w-full rounded-4xl p-8">
+        <div
+          className={`w-${
+            listView === "List" ? "64" : "full"
+          } mt-8 border border-red-500`}
+        >
           <div className="mb-4">
             <select
               value={listView}
@@ -190,7 +201,11 @@ export default function List() {
               <option value="genus">Genus</option>
             </select>
           </div>
-          {group === "none" ? <div>{listView === "List" ? <AllFruits /> : <TableFruits />}</div> : <GroupedList fruitType={group} />}
+          {group === "none" ? (
+            <div>{listView === "List" ? <AllFruits /> : <TableFruits />}</div>
+          ) : (
+            <GroupedList fruitType={group} />
+          )}
         </div>
       </div>
     );
@@ -199,7 +214,7 @@ export default function List() {
   return (
     <div>
       {list.length > 0 ? (
-        <div className="flex justify-space-between p-16 gap-16">
+        <div className="flex flex-col lg:flex-row justify-space-between p-16 gap-16 ">
           <FruitList />
           <JarList jar={jar} colors={colors} />
         </div>

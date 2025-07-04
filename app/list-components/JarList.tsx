@@ -6,7 +6,7 @@ export default function JarList({
   colors,
 }: Readonly<{ jar: Fruit[]; colors: string[] }>) {
   return (
-    <div className="flex justify-center border border-white border rounded-4xl w-full">
+    <div className="flex justify-center border border-white border rounded-4xl w-full p-8">
       <div className="mt-16 items-center text-white">
         <h1 className="mb-4">
           Total Calories :{" "}
